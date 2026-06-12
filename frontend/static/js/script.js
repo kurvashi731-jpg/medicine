@@ -12,7 +12,7 @@ donorForm.addEventListener("submit", async function(event) {
     };
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/donors/", {
+        const response = await fetch("https://emergency-help-yb5a.onrender.com", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(donorData)
@@ -50,7 +50,7 @@ patientForm.addEventListener("submit", async function(event) {
 
     try {
         // Notice this points to /api/patients/ instead of donors
-        const response = await fetch("http://127.0.0.1:8000/api/patients/", {
+        const response = await fetch("https://emergency-help-yb5a.onrender.com", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(patientData)
