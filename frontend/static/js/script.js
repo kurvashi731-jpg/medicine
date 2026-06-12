@@ -69,3 +69,37 @@ patientForm.addEventListener("submit", async function(event) {
     }
 });
 }
+async function checkMyStatus() {
+    // 1. Get the phone number the user typed
+    const phoneInput = document.getElementById("search_phone").value;
+    const resultText = document.getElementById("status_result_message");
+    
+    if (!phoneInput) {
+        resultText.innerText = "Please enter a phone number first.";
+        resultText.style.color = "red";
+        return;
+    }
+
+    try {
+        resultText.innerText = "Searching our secure database...";
+        resultText.style.color = "blue";
+
+        // 2. Ask your live Render backend to search for this number
+        const response = await fetch(`https://emergency-help-yb5a.onrender.com/api/check-status/${phoneInput}`);
+        const data = await response.json();
+
+        // 3. Display the result to the user
+        if (data.found === true) {
+            resultText.innerText = `Hello ${data.name}! You are registered in our system as a ${data.type}.`;
+            resultText.style.color = "green";
+        } else {
+            resultText.innerText = "We couldn't find anyone registered with that phone number.";
+            resultText.style.color = "red";
+        }
+        
+    } catch (error) {
+        console.error("Search failed:", error);
+        resultText.innerText = "Could not connect to the server.";
+        resultText.style.color = "red";
+    }
+}
