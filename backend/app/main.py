@@ -10,7 +10,40 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+# Make sure your models and database are imported!
+from app import models, database 
+
 app = FastAPI()
+# Add this new GET route
+@app.get("/api/check-status/{phone_number}")
+def check_user_status(phone_number: str, db: Session = Depends(database.get_db)):
+    
+    # 1. First, search the Donor table
+    donor = db.query(models.Donor).filter(models.Donor.phone_number == phone_number).first()
+    if donor:
+        return {
+            "found": True, 
+            "type": "Donor", 
+            "name": donor.name,
+            "blood_group": donor.blood_group
+        }
+    
+    # 2. If not a donor, search the Patient table
+    patient = db.query(models.Patient).filter(models.Patient.phone_number == phone_number).first()
+    if patient:
+        return {
+            "found": True, 
+            "type": "Patient", 
+            "name": patient.name,
+            "blood_group": patient.blood_group
+        }
+        
+    # 3. If neither, return a not found message
+    return {"found": False, "message": "No registration found for this number."}
+
+
 
 # This is the security guard giving permission!
 app.add_middleware(
